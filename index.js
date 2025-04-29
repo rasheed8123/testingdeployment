@@ -2,9 +2,13 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
+const { upload } = require("./utils/cloudinary");
+const cors = require("cors");
+app.use(cors());
 
 app.use(express.json()); // for parsing JSON request bodies
 
+app.use(express.urlencoded({ extended: true }));
 
 let users = [
     { id: 1, name: 'Alice' },
@@ -51,6 +55,16 @@ let users = [
   app.delete('/users/:id', (req, res) => {
     users = users.filter(u => u.id !== parseInt(req.params.id));
     res.status(204).send();
+  });
+
+
+  app.post("/upload", upload.single("file"), (req, res) => {
+
+    console.log("Uploaded file info:", req.file); // See what's available
+    res.status(200).send({
+      message: "Upload successful",
+      fileUrl: req.file.path,
+    });
   });
   
 
